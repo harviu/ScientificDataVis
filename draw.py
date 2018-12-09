@@ -8,10 +8,10 @@ from progress.bar import Bar
 
 
 dataName = "yA31"
-dataType = 'v03'
-method = 'slice'
+dataType = 'tev'
+method = 'volume'
 # outputDir = "output_"+method+"_"+dataName+"_"+dataType
-outputDir = "output_test"
+outputDir = "output_test_3"
 
 def shotFrame(index):
     # This template is going to show a slice of the data
@@ -56,15 +56,15 @@ def shotFrame(index):
     dMax = np.amax(dary)
     dMin = np.amin(dary)
     # dRange = dMax - dMin
-    # print("Data array max: ", np.amax(dary))
-    # print("Data array min: ", np.amin(dary))
+    print("Data array max: ", np.amax(dary))
+    print("Data array min: ", np.amin(dary))
 
     ########## setup color map ###########
     # Now create a lookup table that consists of the full hue circle
     # (from HSV).
     hueLut = vtk.vtkLookupTable()
     hueLut.SetTableRange(dMin, dMax)
-    hueLut.SetHueRange(0.5, 1)  #comment these three line to default color map, rainbow
+    hueLut.SetHueRange(0.18, 0.68)  #comment these three line to default color map, rainbow
     hueLut.SetSaturationRange(0, 1)
     hueLut.SetValueRange(1, 1)
     hueLut.Build()  # effective built
@@ -101,22 +101,29 @@ def shotFrame(index):
         opacityTransferFunction = vtk.vtkPiecewiseFunction()
         opacityTransferFunction.AddPoint(dMin, 0.0)
         opacityTransferFunction.AddPoint(dMax, 1)
+        # opacityTransferFunction.AddPoint(dMin+(dMax-dMin)/3, 0)
 
         # Create transfer mapping scalar value to color.
         colorTransferFunction = vtk.vtkColorTransferFunction()
-        colorTransferFunction.SetColorSpaceToHSV()
-        colorTransferFunction.SetHSVWrap(False)
-        colorTransferFunction.AddHSVPoint(dMin, 1, 0, 1)
-        # colorTransferFunction.AddRGBPoint(0.33, 1, 0, 0)
-        # colorTransferFunction.AddRGBPoint(0.67, 1, 0, 0)
-        colorTransferFunction.AddHSVPoint(dMax, 1, 1, 1)
+        colorTransferFunction.SetColorSpaceToDiverging()
+        # colorTransferFunction.SetHSVWrap(False)
+        colorTransferFunction.AddRGBPoint(dMin, 0.23, 0.298, 0.75)
+        # colorTransferFunction.AddRGBPoint(dMin+(dMax-dMin)/3, 0.865,0.865,0.865)
+        colorTransferFunction.AddRGBPoint(dMax, 0.705, 0.02, 0.15)
+
+        
+        volumeGradientOpacity = vtk.vtkPiecewiseFunction()
+        volumeGradientOpacity.AddPoint(dMin,   0.0)
+        volumeGradientOpacity.AddPoint(dMin+(dMax-dMin)*0.6,  0.5)
+        volumeGradientOpacity.AddPoint(dMax, 1.0)
 
         # The property describes how the data will look.
         volumeProperty = vtk.vtkVolumeProperty()
         volumeProperty.SetColor(colorTransferFunction)
         volumeProperty.SetScalarOpacity(opacityTransferFunction)
-        volumeProperty.ShadeOn()
+        volumeProperty.SetGradientOpacity(volumeGradientOpacity)
         volumeProperty.SetInterpolationTypeToLinear()
+        # volumeProperty.ShadeOn()
 
         # The mapper / ray cast function know how to render the data.
         volumeMapper = vtk.vtkGPUVolumeRayCastMapper()
@@ -192,8 +199,8 @@ def shotFrame(index):
 
     # Interact with the data.
     renWin.Render()
-    # iren.Initialize()
-    # iren.Start()
+    iren.Initialize()
+    iren.Start()
 
     # screenshot code:
     w2if = vtk.vtkWindowToImageFilter()
@@ -235,5 +242,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
-    # shotFrame('10487')
+    # main()
+    shotFrame('16514')
