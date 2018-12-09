@@ -8,10 +8,10 @@ from progress.bar import Bar
 
 
 dataName = "yA31"
-dataType = 'tev'
+dataType = 'v02'
 method = 'volume'
 # outputDir = "output_"+method+"_"+dataName+"_"+dataType
-outputDir = "output_test_3"
+outputDir = "output_test_4" #this folder should already exist
 
 def shotFrame(index):
     # This template is going to show a slice of the data
@@ -56,8 +56,8 @@ def shotFrame(index):
     dMax = np.amax(dary)
     dMin = np.amin(dary)
     # dRange = dMax - dMin
-    print("Data array max: ", np.amax(dary))
-    print("Data array min: ", np.amin(dary))
+    # print("Data array max: ", np.amax(dary))
+    # print("Data array min: ", np.amin(dary))
 
     ########## setup color map ###########
     # Now create a lookup table that consists of the full hue circle
@@ -101,7 +101,7 @@ def shotFrame(index):
         opacityTransferFunction = vtk.vtkPiecewiseFunction()
         opacityTransferFunction.AddPoint(dMin, 0.0)
         opacityTransferFunction.AddPoint(dMax, 1)
-        # opacityTransferFunction.AddPoint(dMin+(dMax-dMin)/3, 0)
+        opacityTransferFunction.AddPoint(dMin+2*(dMax-dMin)/3, 0)
 
         # Create transfer mapping scalar value to color.
         colorTransferFunction = vtk.vtkColorTransferFunction()
@@ -113,8 +113,8 @@ def shotFrame(index):
 
         
         volumeGradientOpacity = vtk.vtkPiecewiseFunction()
-        volumeGradientOpacity.AddPoint(dMin,   0.0)
-        volumeGradientOpacity.AddPoint(dMin+(dMax-dMin)*0.6,  0.5)
+        volumeGradientOpacity.AddPoint(dMin, 0)
+        # volumeGradientOpacity.AddPoint(dMin+(dMax-dMin)*0.9,  0.5)
         volumeGradientOpacity.AddPoint(dMax, 1.0)
 
         # The property describes how the data will look.
@@ -187,6 +187,8 @@ def shotFrame(index):
     aRenderer.SetActiveCamera(aCamera)
     aRenderer.ResetCamera()
     aCamera.Dolly(1.2)
+    # elevate the camera when volume rendering
+    # aCamera.Elevation(10)
 
 
     # Note that when camera movement occurs (as it does in the Dolly()
@@ -199,8 +201,8 @@ def shotFrame(index):
 
     # Interact with the data.
     renWin.Render()
-    iren.Initialize()
-    iren.Start()
+    # iren.Initialize()
+    # iren.Start()
 
     # screenshot code:
     w2if = vtk.vtkWindowToImageFilter()
@@ -242,5 +244,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    shotFrame('16514')
+    main()
+    # shotFrame('47357')
