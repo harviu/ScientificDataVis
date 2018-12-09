@@ -2,15 +2,23 @@ import vtk
 import vtk.util.numpy_support as VN
 import numpy as np
 import re
+from pathlib import Path
+from multiprocessing import Pool
+from progress.bar import Bar
 
-def shotFrame(index,method,dataSet,dataType):
+
+dataName = "yA31"
+dataType = 'v03'
+method = 'slice'
+
+def shotFrame(index):
     # This template is going to show a slice of the data
 
     # the data used in this example can be download from
     # http://oceans11.lanl.gov/deepwaterimpact/yA31/300x300x300-FourScalars_resolution/pv_insitu_300x300x300_49275.vti 
 
     #setup the dataset filepath (change this file path to where you store the dataset)
-    filename = dataSet+'/'+str(index)+'.vti'
+    filename = dataName+'/'+str(index)+'.vti'
 
     #the name of data array which is used in this example
     daryName = dataType  #'v02' 'v03' 'prs' 'tev'
@@ -45,9 +53,9 @@ def shotFrame(index,method,dataSet,dataType):
     dary = VN.vtk_to_numpy(reader.GetOutput().GetPointData().GetScalars(daryName))
     dMax = np.amax(dary)
     dMin = np.amin(dary)
-    dRange = dMax - dMin
-    print("Data array max: ", np.amax(dary))
-    print("Data array min: ", np.amin(dary))
+    # dRange = dMax - dMin
+    # print("Data array max: ", np.amax(dary))
+    # print("Data array min: ", np.amin(dary))
 
     ########## setup color map ###########
     # Now create a lookup table that consists of the full hue circle
@@ -197,19 +205,33 @@ def shotFrame(index,method,dataSet,dataType):
     writer.SetInputConnection(w2if.GetOutputPort())
     writer.Write()
 
+def processOne(index):
+    outputFile = "output_"+method+"_"+dataSet+"_"+dataType+"/"+str(index)+".png"
+    file = Path(outputFile)
+    if not file.is_file():
+        try:
+            shotFrame(index,method,dataName,dataType)
+        except:
+            print("Error...")
+
 def main():
-    dataName = "yA31"
-    dataType = 'v02'
-    method = 'slice'
     p = re.compile(r'http://oceans11.*?\.vti')
     with open(dataName+".html",'r',encoding='utf-8') as html:
         text = html.read()
+        indices = []
         for url in p.finditer(text):
-            index = url.group(0)[-9:-4] #url[0] is the match 
-            shotFrame(index,method,dataName,dataType)
+            indices.append(url.group(0)[-9:-4])  #url[0] is the match 
+        pool = Pool(processes=7)
+        bar = Bar('Output: ',max = len(indices))
+        for _ in pool.imap(processOne, indices):
+            bar.next()
+        bar.finish()
+            
     
+
+
 
 
 if __name__ == '__main__':
     main()
-    # shotFrame('10487','volume','yA31','v02')
+    # shotFrame('10487','slice','yA31','prs')

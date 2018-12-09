@@ -6,7 +6,7 @@ from progress.bar import Bar
 
 
 def download(url):
-    filename = "output/"+url[-9:]
+    filename = "yA31/"+url[-9:]
     file = Path(filename)
     if not file.is_file():
         count = 0
@@ -31,7 +31,7 @@ def main():
         text = html.read()
         url = p.findall(text)
         bar = Bar('Downloading',max = len(url))
-        pool = Pool(processes=1) # change the para task number
+        pool = Pool(processes=5) # change the para task number
         for _ in pool.imap(download, url):
             bar.next()
         bar.finish()
