@@ -10,6 +10,8 @@ from progress.bar import Bar
 dataName = "yA31"
 dataType = 'v03'
 method = 'slice'
+# outputDir = "output_"+method+"_"+dataName+"_"+dataType
+outputDir = "output_test"
 
 def shotFrame(index):
     # This template is going to show a slice of the data
@@ -63,7 +65,7 @@ def shotFrame(index):
     hueLut = vtk.vtkLookupTable()
     hueLut.SetTableRange(dMin, dMax)
     hueLut.SetHueRange(0.5, 1)  #comment these three line to default color map, rainbow
-    hueLut.SetSaturationRange(1, 1)
+    hueLut.SetSaturationRange(0, 1)
     hueLut.SetValueRange(1, 1)
     hueLut.Build()  # effective built
 
@@ -198,7 +200,7 @@ def shotFrame(index):
     w2if.SetInput(renWin)
     w2if.Update()
 
-    outputFile = "output_"+method+"_"+dataSet+"_"+dataType+"/"+str(index)+".png"
+    outputFile = outputDir+"/"+str(index)+".png"
 
     writer = vtk.vtkPNGWriter()
     writer.SetFileName(outputFile)
@@ -206,11 +208,11 @@ def shotFrame(index):
     writer.Write()
 
 def processOne(index):
-    outputFile = "output_"+method+"_"+dataSet+"_"+dataType+"/"+str(index)+".png"
+    outputFile = outputDir+"/"+str(index)+".png"
     file = Path(outputFile)
     if not file.is_file():
         try:
-            shotFrame(index,method,dataName,dataType)
+            shotFrame(index)
         except:
             print("Error...")
 
@@ -234,4 +236,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # shotFrame('10487','slice','yA31','prs')
+    # shotFrame('10487')
