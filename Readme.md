@@ -13,3 +13,10 @@ grd AMR grid refinement level
 mat material number id
 v02 volume fraction water
 v03 volume fraction of asteroid
+
+## Scripts
+
+scraping.py is for downloading the dataset
+yA31.html and yC31.html are files containing download links
+draw.py is for generating pictures
+combine.py is for combining pictures form v02 and v03

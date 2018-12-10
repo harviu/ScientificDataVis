@@ -161,7 +161,7 @@ def shotFrame(index):
     ############### creat text (index) ############
     timeIndex = vtk.vtkTextActor()
     timeIndex.SetInput(filename[5:10])
-    timeIndex.SetDisplayPosition(300,30)
+    timeIndex.SetDisplayPosition(40,200)
     timeIndex.GetTextProperty().SetFontSize(24)
     timeIndex.GetTextProperty().SetJustificationToCentered()
     timeIndex.GetTextProperty().SetColor(1,0,0)
@@ -186,9 +186,9 @@ def shotFrame(index):
     # the camera towards the FocalPoint, thereby enlarging the image.
     aRenderer.SetActiveCamera(aCamera)
     aRenderer.ResetCamera()
-    aCamera.Dolly(1.2)
+    aCamera.Dolly(2.5)
     # elevate the camera when volume rendering
-    # aCamera.Elevation(10)
+    aCamera.Elevation(10)
 
 
     # Note that when camera movement occurs (as it does in the Dolly()
